@@ -13,7 +13,11 @@ export const initBoard =
         [0,0,0,0,0,0,0,0 ],
     ]
 
+export const boardSize = 8;
+
+
 /**
+ * Board Data Structure
  * 
  * board[r][c]
     val: cellValue,  // black=1, white=-1, empty=0
