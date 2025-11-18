@@ -34,6 +34,50 @@ const updateBoard = (r, c, playerN) => {
 }
 
 /**
+ * Update Tile Area Algorithm
+ * @param {*} r 
+ * @param {*} c 
+ * @param {*} playerN 
+ */
+const updateTileArea = (r, c, playerN) => {
+
+    const value = playerN % 2 ? 1 : -1;
+
+    const directions = [ 
+        [-1, -1], [-1, 0], [-1, 1], [0, -1], 
+        [0, 1], [1, -1],  [1, 0],  [1, 1] 
+    ];
+
+    directions.forEach(([dr, dc]) => {
+        const tilesToFlip = [];
+        let nr = r + dr;
+        let nc = c + dc;
+
+        // Traverse in this direction
+        while (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+            const cell = currentBoard[nr][nc];
+            
+            if (cell.val === 0) {
+                // Empty tile, stop checking this direction
+                break;
+            } else if (cell.val === -value) {
+                // Opponent's tile, add to potential flips
+                tilesToFlip.push([nr, nc]);
+            } else if (cell.val === value) {
+                // Our tile found, flip all tiles in between
+                tilesToFlip.forEach(([fr, fc]) => {
+                    updateBoard(fr, fc, playerN);
+                });
+                break;
+            }
+            
+            nr += dr;
+            nc += dc;
+        }
+    });
+}
+
+/**
  * Tile Click Action
  * @param {*} r 
  * @param {*} c 
@@ -45,12 +89,27 @@ const onTileClick = (r, c) => {
     // determine the player (1 is black, 2 is white)
     let playerN = ((roundN+1)%2) + 1;
     console.log(`Performed by Player ${playerN}`);
+    
+    // verify if the tile is already occupied
+    if (currentBoard[r][c].val !== 0) {
+        console.log("Tile already occupied. Choose another tile.");
+        return;
+    }
+
+    // only can place at tile if it will flip at least one opponent tile
+    // do in next commit
+
+    // perform the move
+    updateBoard(r, c, playerN);
+
+    // update the surrounding tiles
+    updateTileArea(r, c, playerN);
 
     // update round
     roundN = updateRound(roundN);
 
-    // change tile
-    updateBoard(r, c, playerN);
+    // update tile counts
+    updateTileCount(currentBoard);
 
     // validate if out of moves
     if (roundN === 65) gameSummary(currentBoard);
@@ -100,23 +159,6 @@ const createInitBoard = (cid, board=initBoard) => {
     });
     return board;
 }
-
-/**
- * Reset Board 
- */
-const resetBoard = () => {
-    // Reset data values
-    for (let r = 0; r < BOARD_SIZE; r++) {
-        for (let c = 0; c < BOARD_SIZE; c++) {
-
-            // clear value
-            currentBoard[r][c].val = 0;
-
-            // clear pieces on screen
-            currentBoard[r][c].el.innerHTML = "";
-        }
-    }
-};
 
 
 /**
