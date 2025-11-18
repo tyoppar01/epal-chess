@@ -1,3 +1,5 @@
+import { LogMessage, log } from "./enums/logInfo.js";
+
 /**
  * Sound Effects Error Move
  */
@@ -6,6 +8,6 @@ export const playErrorSound = () => {
     if (audio) {
         audio.currentTime = 0;
         audio.volume = 0.3;
-        audio.play().catch(e => console.log('Audio play failed:', e));
+        audio.play().catch(e => log(LogMessage.AUDIO_PLAY_FAILED, e));
     }
 };

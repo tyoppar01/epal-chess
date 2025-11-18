@@ -2,6 +2,7 @@
 import { initBoard, boardSize } from "./const.js";
 import { gameSummary, updateRound, updateTileCount } from "./counter.js";
 import { playErrorSound } from "./sounder.js";
+import { LogMessage, log } from "./enums/logInfo.js";
 
 // Variable Section
 var roundN = 1;
@@ -15,7 +16,7 @@ let currentBoard;
  */
 const updateBoard = (r, c, playerN) => {
 
-    console.log(`Updating tiles: row ${r}, col ${c}`);
+    log(LogMessage.TILE_UPDATING, r, c);
     
     // player value (1 is black, 2 is white) where (black is 1, white is -1)
     const value = playerN % 2 ? 1 : -1;
@@ -139,15 +140,15 @@ const updateTileArea = (r, c, playerN) => {
  */
 const onTileClick = (r, c) => {
 
-    console.log(`Tile clicked: row ${r}, col ${c}`);
+    log(LogMessage.TILE_CLICKED, r, c);
 
     // determine the player (1 is black, 2 is white)
     let playerN = ((roundN+1)%2) + 1;
-    console.log(`Performed by Player ${playerN}`);
+    log(LogMessage.PLAYER_TURN, playerN);
     
     // verify if the tile is already occupied
     if (currentBoard[r][c].val !== 0) {
-        console.log("Tile already occupied. Choose another tile.");
+        log(LogMessage.TILE_OCCUPIED);
         playErrorSound();
         currentBoard[r][c].el.classList.add('shake');
         setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
@@ -156,7 +157,7 @@ const onTileClick = (r, c) => {
 
     // only can place at tile if it will flip at least one opponent tile
     if (!verifyMove(r, c, playerN)) {
-        console.log("Invalid move. You must flip at least one opponent tile.");
+        log(LogMessage.INVALID_MOVE);
         playErrorSound();
         currentBoard[r][c].el.classList.add('shake');
         setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
@@ -232,7 +233,7 @@ const createInitBoard = (cid, board=initBoard) => {
  * Back to Default Mode
  */
 document.getElementById("reset-btn").onclick = () => {
-    console.log("Restarting Game...");
+    log(LogMessage.RESTARTING_GAME);
     currentBoard = createInitBoard("board");
     updateTileCount(currentBoard);
     roundN = 1;
@@ -244,7 +245,7 @@ document.getElementById("reset-btn").onclick = () => {
  */
 const initGame = () => {
     currentBoard = createInitBoard("board");
-    console.log("Current Board Structure:", currentBoard);
+    log(LogMessage.BOARD_STRUCTURE, currentBoard);
     updateTileCount(currentBoard);
     document.getElementById("roundN").textContent = roundN;
 }
