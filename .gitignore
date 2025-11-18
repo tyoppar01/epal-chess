@@ -1,0 +1,4 @@
+src/coverage/
+src/node_modules/
+.DS_Store
+src/package-lock.json
