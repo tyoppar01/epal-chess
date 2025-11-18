@@ -1,7 +1,7 @@
 // Import Section
-import { initBoard, boardSize } from "./const.js";
-import { gameSummary, updateRound, updateTileCount } from "./counter.js";
-import { playErrorSound } from "./sounder.js";
+import { initBoard, boardSize } from "./enums/const.js";
+import { gameSummary, updateRound, updateTileCount } from "./utils/counter.js";
+import { playErrorSound } from "./utils/sounder.js";
 import { LogMessage, log } from "./enums/logInfo.js";
 
 // Variable Section

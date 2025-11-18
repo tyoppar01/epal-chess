@@ -1,4 +1,4 @@
-import { LogMessage, log } from "./enums/logInfo.js";
+import { LogMessage, log } from "../enums/logInfo.js";
 
 /**
  * Sound Effects Error Move
