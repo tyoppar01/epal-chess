@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Reversi Game</title>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
+
 <body>
-    
+    <header> 
+        <h1>Reversi / Othello</h1> 
+    </header>
+
+    <main>
+        <div id="game-wrapper">
+            <!-- Board will be generated here -->
+            <div id="board"></div>
+
+            <!-- Score Panel -->
+            <div id="score-panel">
+                <h2>Score</h2>
+                <p>Black: <span id="black-count"></span></p>
+                <p>White: <span id="white-count"></span></p>
+                <button id="reset-btn">Restart Game</button>
+
+                <h2>Round <span id="roundN"></span> </h2>
+            </div>
+        </div>
+    </main>
+
+    <!-- MOVE SCRIPT HERE -->
+    <script  type="module" src="src/main.js"></script>
+    <script  type="module" src="src/const.js"></script>
+    <script  type="module" src="src/counter.js"></script>
+
+    <footer>
+        <p>&copy; 2025 Othello Multiplayer. All rights reserved.</p>
+        <p>Please buy each other a coffee if you lose (Jasper)</p>
+    </footer>
+
 </body>
 </html>
