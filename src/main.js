@@ -1,6 +1,7 @@
 // Import Section
 import { initBoard, boardSize } from "./const.js";
 import { gameSummary, updateRound, updateTileCount } from "./counter.js";
+import { playErrorSound } from "./sounder.js";
 
 // Variable Section
 var roundN = 1;
@@ -147,12 +148,18 @@ const onTileClick = (r, c) => {
     // verify if the tile is already occupied
     if (currentBoard[r][c].val !== 0) {
         console.log("Tile already occupied. Choose another tile.");
+        playErrorSound();
+        currentBoard[r][c].el.classList.add('shake');
+        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
         return;
     }
 
     // only can place at tile if it will flip at least one opponent tile
     if (!verifyMove(r, c, playerN)) {
         console.log("Invalid move. You must flip at least one opponent tile.");
+        playErrorSound();
+        currentBoard[r][c].el.classList.add('shake');
+        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
         return;
     }
 
