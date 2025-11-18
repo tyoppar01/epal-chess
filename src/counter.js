@@ -30,6 +30,10 @@ export const updateRound = (n) => {
     return n;
 }
 
+/**
+ * Game Summary: decide who buy who coffee
+ * @param {*} board 
+ */
 export const gameSummary = (board) => {
 
     const black = tileCount(board, 1);
