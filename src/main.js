@@ -1,12 +1,10 @@
 // Import Section
-import { initBoard } from "./const.js";
+import { initBoard, boardSize } from "./const.js";
 import { gameSummary, updateRound, updateTileCount } from "./counter.js";
 
 // Variable Section
 var roundN = 1;
 let currentBoard;
-const boardSize = 8;
-
 
 /**
  * Update Board Action
@@ -21,9 +19,11 @@ const updateBoard = (r, c, playerN) => {
     // player value (1 is black, 2 is white) where (black is 1, white is -1)
     const value = playerN % 2 ? 1 : -1;
 
+    // current cell content
     const cell = currentBoard[r][c];
-    cell.val = value;
 
+    // modify cell value and DOM element
+    cell.val = value;
     const tileEl = cell.el;
     tileEl.innerHTML = "";
 
@@ -31,6 +31,56 @@ const updateBoard = (r, c, playerN) => {
     piece.classList.add("piece", value === 1 ? "black" : "white");
 
     tileEl.appendChild(piece);
+}
+
+/**
+ * Verify Move where must flip at least one opponent tile
+ * @param {*} r 
+ * @param {*} c 
+ * @param {*} playerN 
+ * @returns 
+ */
+const verifyMove = (r, c, playerN) => {
+
+    const value = playerN % 2 ? 1 : -1;
+    let canPlace = false;
+
+    const directions = [ 
+        [-1, -1], [-1, 0], [-1, 1], [0, -1], 
+        [0, 1], [1, -1],  [1, 0],  [1, 1] 
+    ];
+
+    // Iterate through 8 directions
+    for (const [dr, dc] of directions) {
+        let nr = r + dr;
+        let nc = c + dc;
+        let hasOpponentTile = false;
+
+        // Traverse in this direction
+        while (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+            const cell = currentBoard[nr][nc];
+            
+            if (cell.val === -value) {
+                // Opponent's tile found
+                hasOpponentTile = true;
+            } else if (cell.val === value) {
+                // Our tile found
+                if (hasOpponentTile) {
+                    canPlace = true;
+                }
+                break;
+            } else {
+                // Empty tile
+                break;
+            }
+            
+            nr += dr;
+            nc += dc;
+        }
+
+        if (canPlace) break; // No need to check further if we can place
+    }
+    return canPlace;
 }
 
 /**
@@ -55,22 +105,26 @@ const updateTileArea = (r, c, playerN) => {
 
         // Traverse in this direction
         while (nr >= 0 && nr < boardSize && nc >= 0 && nc < boardSize) {
+
+            // current cell content
             const cell = currentBoard[nr][nc];
             
+            // Empty tile, stop checking this direction
             if (cell.val === 0) {
-                // Empty tile, stop checking this direction
                 break;
+            
+            // Opponent's tile, add to potential flips
             } else if (cell.val === -value) {
-                // Opponent's tile, add to potential flips
                 tilesToFlip.push([nr, nc]);
+            
+            // Our tile found, flip all tiles in between
             } else if (cell.val === value) {
-                // Our tile found, flip all tiles in between
+                
                 tilesToFlip.forEach(([fr, fc]) => {
                     updateBoard(fr, fc, playerN);
                 });
                 break;
             }
-            
             nr += dr;
             nc += dc;
         }
@@ -97,7 +151,10 @@ const onTileClick = (r, c) => {
     }
 
     // only can place at tile if it will flip at least one opponent tile
-    // do in next commit
+    if (!verifyMove(r, c, playerN)) {
+        console.log("Invalid move. You must flip at least one opponent tile.");
+        return;
+    }
 
     // perform the move
     updateBoard(r, c, playerN);
@@ -126,7 +183,10 @@ const createInitBoard = (cid, board=initBoard) => {
     const container = document.getElementById(cid);
     container.innerHTML = "";
 
-    board.forEach((row, r) => {
+    // Create a fresh copy of the board to avoid mutating the original
+    const newBoard = board.map(row => row.map(val => typeof val === "object" ? val.val : val));
+
+    newBoard.forEach((row, r) => {
         row.forEach((val, c) => {
 
             const tile = document.createElement("div");
@@ -150,16 +210,15 @@ const createInitBoard = (cid, board=initBoard) => {
 
             container.appendChild(tile);
 
-            board[r][c] = { 
+            newBoard[r][c] = { 
                 val: cellValue, 
                 el: tile 
             };
 
         });
     });
-    return board;
+    return newBoard;
 }
-
 
 /**
  * Reset Button 
@@ -167,7 +226,7 @@ const createInitBoard = (cid, board=initBoard) => {
  */
 document.getElementById("reset-btn").onclick = () => {
     console.log("Restarting Game...");
-    resetBoard();
+    currentBoard = createInitBoard("board");
     updateTileCount(currentBoard);
     roundN = 1;
     document.getElementById("roundN").textContent = roundN;
