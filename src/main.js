@@ -80,7 +80,8 @@ const verifyMove = (r, c, playerN) => {
             nc += dc;
         }
 
-        if (canPlace) break; // No need to check further if we can place
+        // verify step only, break it when true
+        if (canPlace) break;
     }
     return canPlace;
 }
@@ -151,7 +152,7 @@ const onTileClick = (r, c) => {
         log(LogMessage.TILE_OCCUPIED);
         playErrorSound();
         currentBoard[r][c].el.classList.add('shake');
-        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
+        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 100);
         return;
     }
 
@@ -160,7 +161,7 @@ const onTileClick = (r, c) => {
         log(LogMessage.INVALID_MOVE);
         playErrorSound();
         currentBoard[r][c].el.classList.add('shake');
-        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 500);
+        setTimeout(() => currentBoard[r][c].el.classList.remove('shake'), 100);
         return;
     }
 
